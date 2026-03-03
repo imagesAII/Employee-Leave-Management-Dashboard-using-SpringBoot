@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leave Management System — Interactive Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --white: #ffffff;
+  --sidebar: #0f1923;
+  --sidebar-hover: #1a2840;
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --primary-dark: #1d4ed8;
+  --success: #059669;
+  --success-light: #ecfdf5;
+  --danger: #dc2626;
+  --danger-light: #fef2f2;
+  --warning: #d97706;
+  --warning-light: #fffbeb;
+  --gray: #64748b;
+  --gray-light: #f8fafc;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  font-size: 14px;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  background: var(--sidebar);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.logo-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+.logo-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 2px;
+}
+
+.sidebar-section {
+  padding: 16px 12px 8px;
+}
+.sidebar-section-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.25);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.55);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: rgba(255,255,255,0.85); }
+.nav-item.active { background: var(--primary); color: #fff; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.role-switcher {
+  margin: auto 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 12px;
+}
+.role-switcher-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.role-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.15s;
+  margin-bottom: 3px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.role-btn:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); }
+.role-btn.active { background: rgba(37,99,235,0.3); color: #93c5fd; }
+.role-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+}
+.user-info { text-align: right; }
+.user-name { font-size: 13px; font-weight: 600; }
+.user-role-badge {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.content { padding: 28px; flex: 1; }
+
+/* ── PANELS ── */
+.panel { display: none; animation: fadeUp 0.25s ease; }
+.panel.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-sub { font-size: 11px; color: var(--text-muted); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.card-header {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title { font-size: 15px; font-weight: 700; }
+.card-body { padding: 20px 22px; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--gray-light);
+}
+td {
+  padding: 13px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--gray-light); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-pending  { background: #fef3c7; color: #92400e; }
+.badge-approved { background: var(--success-light); color: var(--success); }
+.badge-rejected { background: var(--danger-light); color: var(--danger); }
+.badge-cancelled { background: #f1f5f9; color: var(--gray); }
+
+.badge-role-admin    { background: #ede9fe; color: #6d28d9; }
+.badge-role-manager  { background: #e0f2fe; color: #0369a1; }
+.badge-role-employee { background: #f0fdf4; color: #166534; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #047857; }
+.btn-danger  { background: var(--danger); color: #fff; }
+.btn-danger:hover  { background: #b91c1c; }
+.btn-ghost { background: var(--gray-light); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--border); }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+input, select, textarea {
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.15s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+textarea { resize: vertical; min-height: 80px; }
+
+/* ── BALANCE BARS ── */
+.balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.balance-item {
+  background: var(--gray-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+}
+.balance-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.balance-type { font-size: 12px; font-weight: 700; }
+.balance-count { font-size: 18px; font-weight: 800; }
+.balance-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.balance-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.balance-max { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 28px;
+  width: 460px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.95);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--text);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 320px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+
+/* ── API FLOW VIZ ── */
+.api-flow { display: flex; flex-direction: column; gap: 10px; }
+.api-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--gray-light);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.api-row:hover { border-color: var(--primary); background: var(--primary-light); }
+.method-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 5px;
+  min-width: 44px;
+  text-align: center;
+}
+.method-get  { background: #dcfce7; color: #166534; }
+.method-post { background: #dbeafe; color: #1e40af; }
+.method-put  { background: #fef3c7; color: #92400e; }
+.method-patch { background: #fce7f3; color: #9d174d; }
+.api-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  flex: 1;
+}
+.api-desc { font-size: 12px; color: var(--text-muted); }
+.api-role-tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title { font-size: 16px; font-weight: 700; }
+
+/* ── TIMELINE ── */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 20px;
+  position: relative;
+}
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.tl-item:not(:last-child) .tl-dot::after {
+  content: '';
+  position: absolute;
+  top: 32px; left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: calc(100% + 20px - 32px);
+  background: var(--border);
+}
+.tl-body { flex: 1; padding-top: 4px; }
+.tl-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.tl-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+/* Chips */
+.chip {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin: 2px;
+}
+
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .logo-name, .logo-sub, .sidebar-section-label, .nav-item span, .role-switcher { display: none; }
+  .nav-icon { margin: 0 auto; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">📋</div>
+    <div class="logo-name">LeaveMS</div>
+    <div class="logo-sub">v1.0.0 · Spring Boot</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Navigation</div>
+    <div class="nav-item active" onclick="showPanel('dashboard')">
+      <span class="nav-icon">🏠</span><span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('apply')">
+      <span class="nav-icon">📝</span><span>Apply Leave</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('my-leaves')">
+      <span class="nav-icon">📅</span><span>My Leaves</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('balance')">
+      <span class="nav-icon">💰</span><span>Balance</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('manager')">
+      <span class="nav-icon">✅</span><span>Approvals</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('admin')">
+      <span class="nav-icon">👑</span><span>Admin</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('api-docs')">
+      <span class="nav-icon">🔌</span><span>API Docs</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('flow')">
+      <span class="nav-icon">⚙️</span><span>Code Flow</span>
+    </div>
+  </div>
+
+  <div class="role-switcher">
+    <div class="role-switcher-label">Switch Role</div>
+    <button class="role-btn" onclick="switchRole('employee')">
+      <span class="role-dot" style="background:#22c55e"></span> Employee
+    </button>
+    <button class="role-btn active" onclick="switchRole('manager')">
+      <span class="role-dot" style="background:#3b82f6"></span> Manager
+    </button>
+    <button class="role-btn" onclick="switchRole('admin')">
+      <span class="role-dot" style="background:#a855f7"></span> Admin
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-user">
+      <div class="user-info">
+        <div class="user-name" id="user-name">Sarah Chen</div>
+        <div>
+          <span class="user-role-badge badge-role-manager" id="user-role-badge">MANAGER</span>
+        </div>
+      </div>
+      <div class="user-avatar" id="user-avatar" style="background:#3b82f6">SC</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Employees</div>
+          <div class="stat-value" style="color:var(--primary)">12</div>
+          <div class="stat-sub">Across 4 departments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending Approvals</div>
+          <div class="stat-value" style="color:var(--warning)" id="dash-pending">3</div>
+          <div class="stat-sub">Awaiting review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Approved This Month</div>
+          <div class="stat-value" style="color:var(--success)" id="dash-approved">7</div>
+          <div class="stat-sub">March 2026</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">On Leave Today</div>
+          <div class="stat-value" style="color:var(--danger)">2</div>
+          <div class="stat-sub">Engineering + HR</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 Recent Leave Applications</div>
+          <button class="btn btn-primary btn-sm" onclick="showPanel('manager')">View All</button>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Type</th>
+                  <th>Dates</th>
+                  <th>Days</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-table">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">🏗️ System Architecture</div></div>
+        <div class="card-body">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding:10px 0">
+            <div style="background:#eff6ff;border:2px solid #93c5fd;border-radius:10px;padding:14px 20px;text-align:center;min-width:110px">
+              <div style="font-size:22px">📱</div>
+              <div style="font-size:12px;font-weight:700;margin-top:4px">Client</div>
+              <div style="font-size:10px;color:var(--text-muted)">REST Consumer</div>
+            </div>
+            <div style="font-size:20px;color:var(--text-muted)">→</div>
+            <div style="background:#fef3c7;border:2px solid #fcd34d;border-radius:10px;padding:14px 20px;text-align:center;min-width:110px">
+              <div style="font-size:22px">🛡️</div>
+              <div style="font-size:12px;font-weight:700;margin-top:4px">JWT Filter</div>
+              <div style="font-size:10px;color:var(--text-muted)">Spring Security</div>
+            </div>
+            <div style="font-size:20px;color:var(--text-muted)">→</div>
+            <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px 20px;text-align:center;min-width:110px">
+              <div style="font-size:22px">🎮</div>
+              <div style="font-size:12px;font-weight:700;margin-top:4px">Controller</div>
+              <div style="font-size:10px;color:var(--text-muted)">REST API Layer</div>
+            </div>
+            <div style="font-size:20px;color:var(--text-muted)">→</div>
+            <div style="background:#fdf4ff;border:2px solid #d8b4fe;border-radius:10px;padding:14px 20px;text-align:center;min-width:110px">
+              <div style="font-size:22px">⚙️</div>
+              <div style="font-size:12px;font-weight:700;margin-top:4px">Service</div>
+              <div style="font-size:10px;color:var(--text-muted)">Business Logic</div>
+            </div>
+            <div style="font-size:20px;color:var(--text-muted)">→</div>
+            <div style="background:#fff7ed;border:2px solid #fdba74;border-radius:10px;padding:14px 20px;text-align:center;min-width:110px">
+              <div style="font-size:22px">🗄️</div>
+              <div style="font-size:12px;font-weight:700;margin-top:4px">Repository</div>
+              <div style="font-size:10px;color:var(--text-muted)">JPA / MySQL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ APPLY LEAVE ══ -->
+    <div class="panel" id="panel-apply">
+      <div class="section-header">
+        <div class="section-title">📝 Apply for Leave</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">New Leave Application</div></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>LEAVE TYPE</label>
+              <select id="apply-type">
+                <option value="ANNUAL">🌴 Annual Leave</option>
+                <option value="SICK">🏥 Sick Leave</option>
+                <option value="CASUAL">☀️ Casual Leave</option>
+                <option value="MATERNITY">👶 Maternity Leave</option>
+                <option value="PATERNITY">👨‍👦 Paternity Leave</option>
+                <option value="COMPENSATORY">⏰ Compensatory Leave</option>
+                <option value="UNPAID">💸 Unpaid Leave</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>EMPLOYEE (AS)</label>
+              <select id="apply-employee">
+                <option value="john">John Doe — Engineering</option>
+                <option value="alice">Alice Kumar — HR</option>
+                <option value="bob">Bob Singh — Marketing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>START DATE</label>
+              <input type="date" id="apply-start">
+            </div>
+            <div class="form-group">
+              <label>END DATE</label>
+              <input type="date" id="apply-end">
+            </div>
+            <div class="form-group full">
+              <label>REASON</label>
+              <textarea id="apply-reason" placeholder="Briefly describe the reason for leave..."></textarea>
+            </div>
+          </div>
+          <div id="apply-validation" style="margin:12px 0;display:none" class="toast" style="position:static;transform:none;opacity:1"></div>
+          <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+            <button class="btn btn-primary" onclick="submitLeave()">🚀 Submit Application</button>
+            <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+            <span id="days-preview" style="font-size:12px;color:var(--text-muted);margin-left:auto"></span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">✅ Business Validation Rules</div></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px">
+              <div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:6px">✅ Allowed</div>
+              <div style="font-size:12px;color:#166534;line-height:1.8">
+                • Future dates only<br>
+                • Working days counted (Mon–Fri)<br>
+                • Sufficient balance required<br>
+                • Reason must be provided
+              </div>
+            </div>
+            <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px">
+              <div style="font-size:12px;font-weight:700;color:var(--danger);margin-bottom:6px">❌ Rejected When</div>
+              <div style="font-size:12px;color:#991b1b;line-height:1.8">
+                • Start date in the past<br>
+                • End before start date<br>
+                • Overlapping approved leaves<br>
+                • Insufficient leave balance
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MY LEAVES ══ -->
+    <div class="panel" id="panel-my-leaves">
+      <div class="section-header">
+        <div class="section-title">📅 My Leave Applications</div>
+        <button class="btn btn-primary btn-sm" onclick="showPanel('apply')">+ Apply New</button>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Reason</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody id="my-leaves-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BALANCE ══ -->
+    <div class="panel" id="panel-balance">
+      <div class="section-header"><div class="section-title">💰 Leave Balance — <span id="balance-emp-name">John Doe</span></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Available Leave Days (2026)</div>
+          <select id="balance-selector" onchange="updateBalance()" style="font-size:12px;padding:5px 10px;border-radius:7px;border:1px solid var(--border)">
+            <option value="john">John Doe</option>
+            <option value="alice">Alice Kumar</option>
+            <option value="bob">Bob Singh</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <div class="balance-grid" id="balance-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MANAGER ══ -->
+    <div class="panel" id="panel-manager">
+      <div class="section-header">
+        <div class="section-title">✅ Leave Approvals</div>
+        <span id="pending-count-badge" style="background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px"></span>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All Applications</div>
+          <div style="display:flex;gap:8px">
+            <select id="status-filter" onchange="renderManagerTable()" style="font-size:12px;padding:5px 10px;border-radius:7px;border:1px solid var(--border)">
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Employee</th><th>Dept</th><th>Type</th><th>Dates</th><th>Days</th><th>Reason</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="manager-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ADMIN ══ -->
+    <div class="panel" id="panel-admin">
+      <div class="section-header"><div class="section-title">👑 User Management</div></div>
+      <div class="card">
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="admin-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ API DOCS ══ -->
+    <div class="panel" id="panel-api-docs">
+      <div class="section-header"><div class="section-title">🔌 REST API Endpoints</div></div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">🔓 Auth — Public</div></div>
+        <div class="card-body">
+          <div class="api-flow">
+            <div class="api-row" onclick="showApiDetail('POST /api/auth/register','Register new user. Body: { fullName, email, password, role, department }. Returns JWT token + user details.','ALL')">
+              <span class="method-badge method-post">POST</span>
+              <span class="api-path">/api/auth/register</span>
+              <span class="api-desc">Register new user</span>
+              <span class="api-role-tag" style="background:#f1f5f9;color:#64748b">PUBLIC</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('POST /api/auth/login','Login with email & password. Returns JWT Bearer token to use in Authorization header.','ALL')">
+              <span class="method-badge method-post">POST</span>
+              <span class="api-path">/api/auth/login</span>
+              <span class="api-desc">Login → get JWT</span>
+              <span class="api-role-tag" style="background:#f1f5f9;color:#64748b">PUBLIC</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">👤 Employee Endpoints</div></div>
+        <div class="card-body">
+          <div class="api-flow">
+            <div class="api-row" onclick="showApiDetail('POST /api/leaves/apply','Apply for leave. Body: { leaveType, startDate, endDate, reason }. Validates balance & overlaps.','EMPLOYEE')">
+              <span class="method-badge method-post">POST</span>
+              <span class="api-path">/api/leaves/apply</span>
+              <span class="api-desc">Apply for leave</span>
+              <span class="api-role-tag" style="background:#f0fdf4;color:#166534">EMPLOYEE</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('GET /api/leaves/my','Returns all leave applications for the currently authenticated employee, ordered by date.','EMPLOYEE')">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-path">/api/leaves/my</span>
+              <span class="api-desc">My leave history</span>
+              <span class="api-role-tag" style="background:#f0fdf4;color:#166534">EMPLOYEE</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('GET /api/leaves/{id}','Get details of a specific leave application by its ID.','ALL')">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-path">/api/leaves/{id}</span>
+              <span class="api-desc">Leave by ID</span>
+              <span class="api-role-tag" style="background:#f0fdf4;color:#166534">EMPLOYEE</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('PATCH /api/leaves/{id}/cancel','Cancel a pending or approved (future) leave. Restores balance if it was approved.','EMPLOYEE')">
+              <span class="method-badge method-patch">PATCH</span>
+              <span class="api-path">/api/leaves/{id}/cancel</span>
+              <span class="api-desc">Cancel application</span>
+              <span class="api-role-tag" style="background:#f0fdf4;color:#166534">EMPLOYEE</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('GET /api/leaves/balance','Returns remaining leave days by type for the current authenticated user.','EMPLOYEE')">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-path">/api/leaves/balance</span>
+              <span class="api-desc">My leave balance</span>
+              <span class="api-role-tag" style="background:#f0fdf4;color:#166534">EMPLOYEE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">🧑‍💼 Manager Endpoints</div></div>
+        <div class="card-body">
+          <div class="api-flow">
+            <div class="api-row" onclick="showApiDetail('GET /api/manager/leaves/pending','Returns all leave applications with PENDING status across all employees.','MANAGER')">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-path">/api/manager/leaves/pending</span>
+              <span class="api-desc">Pending applications</span>
+              <span class="api-role-tag" style="background:#e0f2fe;color:#0369a1">MANAGER</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('PUT /api/manager/leaves/{id}/review','Approve or Reject a leave. Body: { status: APPROVED|REJECTED, reviewComments }. Auto-deducts balance on approval.','MANAGER')">
+              <span class="method-badge method-put">PUT</span>
+              <span class="api-path">/api/manager/leaves/{id}/review</span>
+              <span class="api-desc">Approve / Reject</span>
+              <span class="api-role-tag" style="background:#e0f2fe;color:#0369a1">MANAGER</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('GET /api/manager/leaves/department/{dept}','Filter leaves by department name and optional status query param.','MANAGER')">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-path">/api/manager/leaves/department/{dept}</span>
+              <span class="api-desc">By department</span>
+              <span class="api-role-tag" style="background:#e0f2fe;color:#0369a1">MANAGER</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">👑 Admin Endpoints</div></div>
+        <div class="card-body">
+          <div class="api-flow">
+            <div class="api-row" onclick="showApiDetail('GET /api/admin/users','Returns all registered users with role, department, and active status.','ADMIN')">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-path">/api/admin/users</span>
+              <span class="api-desc">All users</span>
+              <span class="api-role-tag" style="background:#ede9fe;color:#6d28d9">ADMIN</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('PATCH /api/admin/users/{id}/activate','Re-activate a deactivated user account. User can login again.','ADMIN')">
+              <span class="method-badge method-patch">PATCH</span>
+              <span class="api-path">/api/admin/users/{id}/activate</span>
+              <span class="api-desc">Activate user</span>
+              <span class="api-role-tag" style="background:#ede9fe;color:#6d28d9">ADMIN</span>
+            </div>
+            <div class="api-row" onclick="showApiDetail('PATCH /api/admin/users/{id}/deactivate','Deactivate a user. They cannot login until reactivated by Admin.','ADMIN')">
+              <span class="method-badge method-patch">PATCH</span>
+              <span class="api-path">/api/admin/users/{id}/deactivate</span>
+              <span class="api-desc">Deactivate user</span>
+              <span class="api-role-tag" style="background:#ede9fe;color:#6d28d9">ADMIN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CODE FLOW ══ -->
+    <div class="panel" id="panel-flow">
+      <div class="section-header"><div class="section-title">⚙️ Code Architecture & Flow</div></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📦 Package Structure</div></div>
+          <div class="card-body">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:2;color:var(--text)">
+              <div style="color:var(--primary);font-weight:700">com.leave.management/</div>
+              <div style="padding-left:16px">
+                <div>├── <span style="color:#7c3aed">config/</span> <span style="color:var(--text-muted);font-family:Outfit">SecurityConfig</span></div>
+                <div>├── <span style="color:#7c3aed">controller/</span></div>
+                <div style="padding-left:16px;color:var(--text-muted);font-family:Outfit;font-size:11px">AuthController, LeaveController<br>ManagerController, AdminController</div>
+                <div>├── <span style="color:#7c3aed">dto/</span> <span style="color:var(--text-muted);font-family:Outfit">ApiResponse, AuthDTOs, LeaveDTOs</span></div>
+                <div>├── <span style="color:#7c3aed">entity/</span> <span style="color:var(--text-muted);font-family:Outfit">User, LeaveApplication, LeaveBalance</span></div>
+                <div>├── <span style="color:#7c3aed">enums/</span> <span style="color:var(--text-muted);font-family:Outfit">Role, LeaveType, LeaveStatus</span></div>
+                <div>├── <span style="color:#7c3aed">exception/</span> <span style="color:var(--text-muted);font-family:Outfit">GlobalExceptionHandler</span></div>
+                <div>├── <span style="color:#7c3aed">repository/</span> <span style="color:var(--text-muted);font-family:Outfit">3 JPA Repositories</span></div>
+                <div>├── <span style="color:#7c3aed">security/</span> <span style="color:var(--text-muted);font-family:Outfit">JwtUtils, JwtAuthFilter</span></div>
+                <div>└── <span style="color:#7c3aed">service/impl/</span> <span style="color:var(--text-muted);font-family:Outfit">Auth, Leave, UserDetails</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">🔐 Security Flow</div></div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#dbeafe">🔑</div>
+                <div class="tl-body">
+                  <div class="tl-title">User Registers / Logs In</div>
+                  <div class="tl-desc">Password hashed with <span class="chip">BCryptPasswordEncoder</span></div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#fef3c7">🎟️</div>
+                <div class="tl-body">
+                  <div class="tl-title">JWT Token Issued</div>
+                  <div class="tl-desc">Signed with HS256, expires in <span class="chip">24 hours</span></div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#f0fdf4">🛡️</div>
+                <div class="tl-body">
+                  <div class="tl-title">JwtAuthFilter Runs</div>
+                  <div class="tl-desc">Intercepts every request, validates token on each call</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#fdf4ff">✅</div>
+                <div class="tl-body">
+                  <div class="tl-title">@PreAuthorize Checks Role</div>
+                  <div class="tl-desc"><span class="chip">ADMIN</span> <span class="chip">MANAGER</span> <span class="chip">EMPLOYEE</span> enforced per endpoint</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">📝 Leave Apply Flow</div></div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#dbeafe">1️⃣</div>
+                <div class="tl-body"><div class="tl-title">LeaveController.applyLeave()</div><div class="tl-desc">Receives validated DTO, extracts email from JWT context</div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#fef3c7">2️⃣</div>
+                <div class="tl-body"><div class="tl-title">Date Validation</div><div class="tl-desc">Start ≥ today, end ≥ start — throws <span class="chip">LeaveException</span> if invalid</div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#fdf4ff">3️⃣</div>
+                <div class="tl-body"><div class="tl-title">Overlap Check</div><div class="tl-desc">Queries DB for any existing APPROVED leave in the same range</div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#f0fdf4">4️⃣</div>
+                <div class="tl-body"><div class="tl-title">Balance Check</div><div class="tl-desc">Working days calculated (Mon–Fri), compared against <span class="chip">LeaveBalance</span></div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:#dcfce7">5️⃣</div>
+                <div class="tl-body"><div class="tl-title">Saved as PENDING</div><div class="tl-desc">Stored in DB, awaits manager review via <span class="chip">reviewLeave()</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">🗄️ Database Entities</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:var(--gray-light);border-radius:8px;padding:12px;border:1px solid var(--border)">
+                <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px">👤 users</div>
+                <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);line-height:1.8">
+                  id, fullName, email, password (BCrypt),<br>role (ENUM), department, active
+                </div>
+              </div>
+              <div style="background:var(--gray-light);border-radius:8px;padding:12px;border:1px solid var(--border)">
+                <div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:6px">📋 leave_applications</div>
+                <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);line-height:1.8">
+                  id, employee_id (FK), leaveType, startDate,<br>endDate, totalDays, reason, status,<br>reviewedBy (FK), reviewComments, appliedAt
+                </div>
+              </div>
+              <div style="background:var(--gray-light);border-radius:8px;padding:12px;border:1px solid var(--border)">
+                <div style="font-size:12px;font-weight:700;color:var(--warning);margin-bottom:6px">💰 leave_balances</div>
+                <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);line-height:1.8">
+                  id, employee_id (FK, unique),<br>annualLeave, sickLeave, casualLeave,<br>maternityLeave, paternityLeave, year
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- API Detail Modal -->
+<div class="modal-overlay" id="api-modal">
+  <div class="modal">
+    <div class="modal-title" id="api-modal-title">Endpoint Details</div>
+    <div id="api-modal-body" style="font-size:13px;line-height:1.7;color:var(--text-muted)"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('api-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal">
+    <div class="modal-title">Review Leave Application</div>
+    <div id="review-modal-info" style="background:var(--gray-light);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;line-height:1.8"></div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>DECISION</label>
+      <select id="review-decision">
+        <option value="APPROVED">✅ Approve</option>
+        <option value="REJECTED">❌ Reject</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>COMMENTS (optional)</label>
+      <textarea id="review-comment" placeholder="Add review comments..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('review-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+const state = {
+  currentRole: 'manager',
+  currentLeaveId: null,
+  users: [
+    { id: 1, name: 'John Doe',    email: 'john@company.com',  role: 'ROLE_EMPLOYEE', dept: 'Engineering', active: true,  avatar: 'JD', color: '#22c55e' },
+    { id: 2, name: 'Alice Kumar', email: 'alice@company.com', role: 'ROLE_EMPLOYEE', dept: 'HR',          active: true,  avatar: 'AK', color: '#f59e0b' },
+    { id: 3, name: 'Bob Singh',   email: 'bob@company.com',   role: 'ROLE_EMPLOYEE', dept: 'Marketing',   active: true,  avatar: 'BS', color: '#8b5cf6' },
+    { id: 4, name: 'Sarah Chen',  email: 'sarah@company.com', role: 'ROLE_MANAGER',  dept: 'Engineering', active: true,  avatar: 'SC', color: '#3b82f6' },
+    { id: 5, name: 'Raj Patel',   email: 'raj@company.com',   role: 'ROLE_ADMIN',    dept: 'IT',          active: true,  avatar: 'RP', color: '#a855f7' },
+    { id: 6, name: 'Priya Nair',  email: 'priya@company.com', role: 'ROLE_EMPLOYEE', dept: 'Finance',     active: false, avatar: 'PN', color: '#ec4899' },
+  ],
+  leaves: [
+    { id: 1, empId: 1, empName: 'John Doe',    dept: 'Engineering', type: 'ANNUAL',       start: '2026-03-10', end: '2026-03-12', days: 3, reason: 'Family vacation',         status: 'PENDING',   reviewer: null, comment: '' },
+    { id: 2, empId: 2, empName: 'Alice Kumar', dept: 'HR',          type: 'SICK',         start: '2026-03-05', end: '2026-03-06', days: 2, reason: 'Fever & rest',             status: 'APPROVED',  reviewer: 'Sarah Chen', comment: 'Get well soon!' },
+    { id: 3, empId: 3, empName: 'Bob Singh',   dept: 'Marketing',   type: 'CASUAL',       start: '2026-03-15', end: '2026-03-15', days: 1, reason: 'Personal work',            status: 'PENDING',   reviewer: null, comment: '' },
+    { id: 4, empId: 1, empName: 'John Doe',    dept: 'Engineering', type: 'COMPENSATORY', start: '2026-02-20', end: '2026-02-21', days: 2, reason: 'Weekend overtime',         status: 'APPROVED',  reviewer: 'Sarah Chen', comment: 'Approved' },
+    { id: 5, empId: 6, empName: 'Priya Nair',  dept: 'Finance',     type: 'ANNUAL',       start: '2026-03-20', end: '2026-03-25', days: 4, reason: 'Travel',                   status: 'PENDING',   reviewer: null, comment: '' },
+    { id: 6, empId: 2, empName: 'Alice Kumar', dept: 'HR',          type: 'CASUAL',       start: '2026-03-18', end: '2026-03-18', days: 1, reason: 'Appointment',              status: 'REJECTED',  reviewer: 'Sarah Chen', comment: 'Insufficient notice' },
+  ],
+  balances: {
+    john:  { name: 'John Doe',    annual: 15, sick: 10, casual: 5, maternity: 180, paternity: 15, comp: 2 },
+    alice: { name: 'Alice Kumar', annual: 18, sick: 10, casual: 6, maternity: 180, paternity: 15, comp: 0 },
+    bob:   { name: 'Bob Singh',   annual: 16, sick: 12, casual: 5, maternity: 180, paternity: 15, comp: 0 },
+  },
+  maxBalance: { annual: 18, sick: 12, casual: 6, maternity: 180, paternity: 15, comp: 10 }
+};
+
+const roleProfiles = {
+  employee: { name: 'John Doe',   role: 'EMPLOYEE', badge: 'badge-role-employee', color: '#22c55e', initials: 'JD' },
+  manager:  { name: 'Sarah Chen', role: 'MANAGER',  badge: 'badge-role-manager',  color: '#3b82f6', initials: 'SC' },
+  admin:    { name: 'Raj Patel',  role: 'ADMIN',    badge: 'badge-role-admin',    color: '#a855f7', initials: 'RP' },
+};
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  // Set default dates
+  const today = new Date(); today.setDate(today.getDate() + 3);
+  const end = new Date(today); end.setDate(end.getDate() + 2);
+  document.getElementById('apply-start').value = formatDate(today);
+  document.getElementById('apply-end').value   = formatDate(end);
+  document.getElementById('apply-start').addEventListener('change', previewDays);
+  document.getElementById('apply-end').addEventListener('change', previewDays);
+  previewDays();
+  renderAll();
+  switchRole('manager');
+});
+
+function renderAll() {
+  renderDashboardTable();
+  renderMyLeavesTable();
+  renderManagerTable();
+  renderAdminTable();
+  renderBalanceGrid();
+  updatePendingCount();
+}
+
+function formatDate(d) {
+  return d.toISOString().split('T')[0];
+}
+function fmtDisplay(s) {
+  if (!s) return '—';
+  const [y,m,d] = s.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d} ${months[m-1]}`;
+}
+
+function statusBadge(s) {
+  const map = { PENDING:'badge-pending', APPROVED:'badge-approved', REJECTED:'badge-rejected', CANCELLED:'badge-cancelled' };
+  return `<span class="badge ${map[s]||''}">${s}</span>`;
+}
+
+// ── PANELS ──
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+
+  const nav = document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`);
+  if (nav) nav.classList.add('active');
+
+  const titles = {
+    dashboard: 'Dashboard', apply: 'Apply for Leave', 'my-leaves': 'My Leaves',
+    balance: 'Leave Balance', manager: 'Leave Approvals', admin: 'User Management',
+    'api-docs': 'API Documentation', flow: 'Code Architecture'
+  };
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+
+  if (id === 'balance') renderBalanceGrid();
+  if (id === 'manager') renderManagerTable();
+}
+
+// ── ROLE SWITCH ──
+function switchRole(role) {
+  state.currentRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.role-btn').forEach(b => {
+    if (b.textContent.trim().toLowerCase().includes(role)) b.classList.add('active');
+  });
+  const p = roleProfiles[role];
+  document.getElementById('user-name').textContent = p.name;
+  document.getElementById('user-role-badge').textContent = p.role;
+  document.getElementById('user-role-badge').className = `user-role-badge badge ${p.badge}`;
+  document.getElementById('user-avatar').style.background = p.color;
+  document.getElementById('user-avatar').textContent = p.initials;
+  showToast(`Switched to ${p.role} view as ${p.name}`, 'success');
+}
+
+// ── DASHBOARD TABLE ──
+function renderDashboardTable() {
+  const tbody = document.getElementById('dashboard-table');
+  const recent = [...state.leaves].sort((a,b) => b.id - a.id).slice(0, 5);
+  tbody.innerHTML = recent.map(l => `
+    <tr>
+      <td><strong>${l.empName}</strong><br><span style="font-size:11px;color:var(--text-muted)">${l.dept}</span></td>
+      <td><span style="font-size:12px">${leaveIcon(l.type)} ${l.type}</span></td>
+      <td style="font-size:12px">${fmtDisplay(l.start)} – ${fmtDisplay(l.end)}</td>
+      <td><strong>${l.days}</strong></td>
+      <td>${statusBadge(l.status)}</td>
+      <td>${l.status==='PENDING' ? `<button class="btn btn-primary btn-sm" onclick="openReview(${l.id})">Review</button>` : '—'}</td>
+    </tr>`).join('');
+}
+
+// ── MY LEAVES ──
+function renderMyLeavesTable() {
+  const tbody = document.getElementById('my-leaves-table');
+  const mine = state.leaves.filter(l => l.empId === 1);
+  tbody.innerHTML = mine.length ? mine.map(l => `
+    <tr>
+      <td>${leaveIcon(l.type)} ${l.type}</td>
+      <td>${fmtDisplay(l.start)}</td>
+      <td>${fmtDisplay(l.end)}</td>
+      <td><strong>${l.days}</strong></td>
+      <td style="max-width:160px;font-size:12px">${l.reason}</td>
+      <td>${statusBadge(l.status)}</td>
+      <td>${l.status==='PENDING' ? `<button class="btn btn-ghost btn-sm" onclick="cancelLeave(${l.id})">Cancel</button>` : '—'}</td>
+    </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">No leave applications yet.</td></tr>`;
+}
+
+// ── MANAGER TABLE ──
+function renderManagerTable() {
+  const filter = document.getElementById('status-filter')?.value || 'ALL';
+  const data = filter === 'ALL' ? state.leaves : state.leaves.filter(l => l.status === filter);
+  const tbody = document.getElementById('manager-table');
+  tbody.innerHTML = data.map(l => `
+    <tr>
+      <td><strong>${l.empName}</strong></td>
+      <td style="font-size:12px">${l.dept}</td>
+      <td style="font-size:12px">${leaveIcon(l.type)} ${l.type}</td>
+      <td style="font-size:12px">${fmtDisplay(l.start)} – ${fmtDisplay(l.end)}</td>
+      <td><strong>${l.days}</strong></td>
+      <td style="font-size:12px;max-width:140px">${l.reason}</td>
+      <td>${statusBadge(l.status)}</td>
+      <td>
+        ${l.status==='PENDING' ? `
+          <button class="btn btn-success btn-sm" onclick="quickAction(${l.id},'APPROVED')" style="margin-right:4px">✓</button>
+          <button class="btn btn-danger btn-sm" onclick="quickAction(${l.id},'REJECTED')">✗</button>
+        ` : l.reviewer ? `<span style="font-size:11px;color:var(--text-muted)">by ${l.reviewer}</span>` : '—'}
+      </td>
+    </tr>`).join('');
+  updatePendingCount();
+}
+
+// ── ADMIN TABLE ──
+function renderAdminTable() {
+  const tbody = document.getElementById('admin-table');
+  tbody.innerHTML = state.users.map(u => `
+    <tr>
+      <td><span style="background:${u.color};color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${u.avatar}</span></td>
+      <td><strong>${u.name}</strong></td>
+      <td style="font-size:12px;font-family:'JetBrains Mono',monospace">${u.email}</td>
+      <td>${roleBadge(u.role)}</td>
+      <td style="font-size:12px">${u.dept}</td>
+      <td><span class="badge ${u.active ? 'badge-approved' : 'badge-rejected'}">${u.active ? 'Active' : 'Inactive'}</span></td>
+      <td>
+        ${u.active
+          ? `<button class="btn btn-ghost btn-sm" onclick="toggleUser(${u.id},false)">Deactivate</button>`
+          : `<button class="btn btn-success btn-sm" onclick="toggleUser(${u.id},true)">Activate</button>`
+        }
+      </td>
+    </tr>`).join('');
+}
+
+// ── BALANCE ──
+function renderBalanceGrid() {
+  const key = document.getElementById('balance-selector')?.value || 'john';
+  const b = state.balances[key];
+  document.getElementById('balance-emp-name').textContent = b.name;
+  const items = [
+    { label: '🌴 Annual',      val: b.annual,    max: 18,  color: '#3b82f6' },
+    { label: '🏥 Sick',        val: b.sick,      max: 12,  color: '#f59e0b' },
+    { label: '☀️ Casual',     val: b.casual,    max: 6,   color: '#22c55e' },
+    { label: '👶 Maternity',   val: b.maternity, max: 180, color: '#ec4899' },
+    { label: '👨‍👦 Paternity', val: b.paternity, max: 15,  color: '#8b5cf6' },
+    { label: '⏰ Comp',        val: b.comp,      max: 10,  color: '#06b6d4' },
+  ];
+  document.getElementById('balance-grid').innerHTML = items.map(i => `
+    <div class="balance-item">
+      <div class="balance-header">
+        <div class="balance-type">${i.label}</div>
+        <div class="balance-count" style="color:${i.color}">${i.val}</div>
+      </div>
+      <div class="balance-bar">
+        <div class="balance-fill" style="width:${Math.round(i.val/i.max*100)}%;background:${i.color}"></div>
+      </div>
+      <div class="balance-max">${i.val} / ${i.max} days remaining</div>
+    </div>`).join('');
+}
+
+function updateBalance() { renderBalanceGrid(); }
+
+// ── APPLY LEAVE ──
+function submitLeave() {
+  const type   = document.getElementById('apply-type').value;
+  const emp    = document.getElementById('apply-employee').value;
+  const start  = document.getElementById('apply-start').value;
+  const end    = document.getElementById('apply-end').value;
+  const reason = document.getElementById('apply-reason').value.trim();
+
+  if (!start || !end || !reason) { showToast('Please fill all fields', 'error'); return; }
+  if (end < start) { showToast('❌ End date cannot be before start date', 'error'); return; }
+
+  const today = new Date().toISOString().split('T')[0];
+  if (start < today) { showToast('❌ Start date cannot be in the past', 'error'); return; }
+
+  const days = calcWorkingDays(start, end);
+  const empNames = { john: 'John Doe', alice: 'Alice Kumar', bob: 'Bob Singh' };
+  const depts    = { john: 'Engineering', alice: 'HR', bob: 'Marketing' };
+
+  const newLeave = {
+    id: state.leaves.length + 1,
+    empId: 1, empName: empNames[emp], dept: depts[emp],
+    type, start, end, days, reason, status: 'PENDING', reviewer: null, comment: ''
+  };
+  state.leaves.push(newLeave);
+
+  showToast(`✅ Leave application submitted! ${days} working day(s) requested.`, 'success');
+  document.getElementById('apply-reason').value = '';
+  renderAll();
+  showPanel('my-leaves');
+}
+
+function clearForm() {
+  document.getElementById('apply-reason').value = '';
+  document.getElementById('apply-type').value = 'ANNUAL';
+}
+
+function previewDays() {
+  const s = document.getElementById('apply-start').value;
+  const e = document.getElementById('apply-end').value;
+  const el = document.getElementById('days-preview');
+  if (s && e && e >= s) {
+    const d = calcWorkingDays(s, e);
+    el.textContent = `📅 ${d} working day${d !== 1 ? 's' : ''}`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+function calcWorkingDays(start, end) {
+  let count = 0;
+  let cur = new Date(start);
+  const endD = new Date(end);
+  while (cur <= endD) {
+    const dow = cur.getDay();
+    if (dow !== 0 && dow !== 6) count++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return count;
+}
+
+// ── REVIEW ──
+function openReview(id) {
+  const l = state.leaves.find(x => x.id === id);
+  state.currentLeaveId = id;
+  document.getElementById('review-modal-info').innerHTML = `
+    <strong>${l.empName}</strong> · ${l.dept}<br>
+    ${leaveIcon(l.type)} <strong>${l.type}</strong> · ${fmtDisplay(l.start)} – ${fmtDisplay(l.end)} · <strong>${l.days} day(s)</strong><br>
+    <em style="color:var(--text-muted)">${l.reason}</em>
+  `;
+  document.getElementById('review-comment').value = '';
+  document.getElementById('review-modal').classList.add('open');
+}
+
+function submitReview() {
+  const id = state.currentLeaveId;
+  const decision = document.getElementById('review-decision').value;
+  const comment  = document.getElementById('review-comment').value;
+  const l = state.leaves.find(x => x.id === id);
+  l.status   = decision;
+  l.reviewer = roleProfiles[state.currentRole].name;
+  l.comment  = comment;
+
+  if (decision === 'APPROVED') {
+    const b = state.balances.john;
+    if (l.type === 'ANNUAL')  b.annual  = Math.max(0, b.annual  - l.days);
+    if (l.type === 'SICK')    b.sick    = Math.max(0, b.sick    - l.days);
+    if (l.type === 'CASUAL')  b.casual  = Math.max(0, b.casual  - l.days);
+  }
+
+  closeModal('review-modal');
+  showToast(`Leave ${decision} successfully! Balance updated.`, decision === 'APPROVED' ? 'success' : 'error');
+  renderAll();
+}
+
+function quickAction(id, decision) {
+  const l = state.leaves.find(x => x.id === id);
+  l.status   = decision;
+  l.reviewer = roleProfiles[state.currentRole].name;
+  if (decision === 'APPROVED') {
+    const b = state.balances.john;
+    if (l.type === 'ANNUAL') b.annual = Math.max(0, b.annual - l.days);
+    if (l.type === 'SICK')   b.sick   = Math.max(0, b.sick   - l.days);
+    if (l.type === 'CASUAL') b.casual = Math.max(0, b.casual - l.days);
+  }
+  showToast(`Leave ${decision}!`, decision === 'APPROVED' ? 'success' : 'error');
+  renderAll();
+}
+
+function cancelLeave(id) {
+  const l = state.leaves.find(x => x.id === id);
+  if (l.status !== 'PENDING') { showToast('Can only cancel PENDING applications', 'error'); return; }
+  l.status = 'CANCELLED';
+  showToast('Leave application cancelled.', 'success');
+  renderAll();
+}
+
+// ── ADMIN ──
+function toggleUser(id, active) {
+  const u = state.users.find(x => x.id === id);
+  u.active = active;
+  showToast(`User ${u.name} ${active ? 'activated' : 'deactivated'}.`, active ? 'success' : 'error');
+  renderAdminTable();
+}
+
+// ── API DETAIL MODAL ──
+function showApiDetail(endpoint, desc, role) {
+  document.getElementById('api-modal-title').textContent = endpoint;
+  document.getElementById('api-modal-body').innerHTML = `
+    <div style="margin-bottom:12px">${desc}</div>
+    <div style="background:var(--gray-light);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px">
+      <div style="color:var(--text-muted);margin-bottom:4px">// Example Authorization Header</div>
+      <div>Authorization: Bearer &lt;JWT_TOKEN&gt;</div>
+    </div>
+    <div style="margin-top:12px">
+      Required role: <span class="chip">${role}</span>
+    </div>
+  `;
+  document.getElementById('api-modal').classList.add('open');
+}
+
+// ── HELPERS ──
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => { t.classList.remove('show'); }, 3000);
+}
+
+function updatePendingCount() {
+  const n = state.leaves.filter(l => l.status === 'PENDING').length;
+  document.getElementById('dash-pending').textContent = n;
+  const badge = document.getElementById('pending-count-badge');
+  if (badge) badge.textContent = `${n} pending`;
+}
+
+function leaveIcon(type) {
+  const m = { ANNUAL:'🌴', SICK:'🏥', CASUAL:'☀️', MATERNITY:'👶', PATERNITY:'👨‍👦', UNPAID:'💸', COMPENSATORY:'⏰' };
+  return m[type] || '📋';
+}
+
+function roleBadge(role) {
+  if (role.includes('ADMIN'))    return '<span class="badge badge-role-admin">ADMIN</span>';
+  if (role.includes('MANAGER'))  return '<span class="badge badge-role-manager">MANAGER</span>';
+  return '<span class="badge badge-role-employee">EMPLOYEE</span>';
+}
+</script>
+</body>
+</html>
