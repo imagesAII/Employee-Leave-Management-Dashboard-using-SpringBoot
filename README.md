@@ -176,3 +176,21 @@ Authorization: Bearer <token>
 - Balance is restored on cancellation of an approved leave
 - Unpaid leave has no balance limit
 - Default balances: Annual=18, Sick=12, Casual=6, Maternity=180, Paternity=15
+
+
+
+
+<img width="1280" height="746" alt="Screenshot 2026-03-03 at 6 56 39 AM" src="https://github.com/user-attachments/assets/37925d98-c336-49ea-b62a-983aebf9fa45" />
+
+
+
+<img width="1280" height="746" alt="Screenshot 2026-03-03 at 6 58 40 AM" src="https://github.com/user-attachments/assets/3c0969b9-eb7e-41f2-9006-ce2824d36e2b" />
+
+
+
+<img width="1280" height="746" alt="Screenshot 2026-03-03 at 6 59 02 AM" src="https://github.com/user-attachments/assets/e7e10b90-a831-41ef-b565-80295c532e9d" />
+
+<img width="1280" height="747" alt="Screenshot 2026-03-03 at 6 59 18 AM" src="https://github.com/user-attachments/assets/3334c428-faf2-4a86-9e66-c93c6b432a48" />
+
+
+
